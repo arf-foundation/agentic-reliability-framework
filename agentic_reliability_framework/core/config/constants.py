@@ -38,6 +38,11 @@ def _get_oss_version() -> str:
 
 # ==================== PERFORMANCE CONSTANTS ====================
 HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
+CACHE_EXPIRY_MINUTES: Final[int] = 15  # Cache expiry time in minutes
+FORECAST_MIN_DATA_POINTS: Final[int] = 5  # Minimum data points required for forecasting
+FORECAST_LOOKAHEAD_MINUTES: Final[int] = 15  # Forecasting lookahead window in minutes
+SLOPE_THRESHOLD_INCREASING: Final[float] = 5.0  # Threshold for increasing trend detection
+SLOPE_THRESHOLD_DECREASING: Final[float] = -2.0  # Threshold for decreasing trend detection
 
 
 # ==================== OSS ARCHITECTURAL BOUNDARIES ====================
@@ -540,6 +545,11 @@ if "PYTEST_CURRENT_TEST" not in os.environ and "pytest" not in sys.modules:
 __all__ = [
     # === PERFORMANCE CONSTANTS ===
     "HISTORY_WINDOW",
+    "CACHE_EXPIRY_MINUTES",
+    "FORECAST_MIN_DATA_POINTS",
+    "FORECAST_LOOKAHEAD_MINUTES",
+    "SLOPE_THRESHOLD_INCREASING",
+    "SLOPE_THRESHOLD_DECREASING",
     # === CORE BOUNDARIES ===
     "MAX_INCIDENT_HISTORY",
     "MAX_RAG_LOOKBACK_DAYS",
