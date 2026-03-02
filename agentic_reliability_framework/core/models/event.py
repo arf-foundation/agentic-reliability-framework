@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 class EventSeverity(str, Enum):
     INFO = "info"
     WARNING = "warning"
+    HIGH = "high"
     ERROR = "error"
     CRITICAL = "critical"
 

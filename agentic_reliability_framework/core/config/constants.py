@@ -93,6 +93,14 @@ CPU_CRITICAL: Final[float] = 0.9
 MEMORY_WARNING: Final[float] = 0.8
 MEMORY_CRITICAL: Final[float] = 0.9
 
+# === AGENT & RUNTIME TIMEOUTS ===
+AGENT_TIMEOUT_SECONDS: Final[int] = 30  # Maximum time for an agent to respond
+MAX_EVENTS_STORED: Final[int] = 1000  # Maximum number of events to keep in memory
+
+# === BUSINESS IMPACT CONSTANTS ===
+BASE_REVENUE_PER_MINUTE: Final[float] = 100.0  # Base revenue per minute (for SLA calculations)
+BASE_USERS: Final[int] = 10000  # Base number of users for impact calculations
+
 # === SECURITY BOUNDARIES ===
 MAX_API_KEYS: Final[int] = 1  # Only HuggingFace API key
 ALLOWED_ENVIRONMENTS: Final[Tuple[str, ...]] = ("development", "staging", "production")

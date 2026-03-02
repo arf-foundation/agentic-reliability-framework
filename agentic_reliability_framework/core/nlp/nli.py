@@ -4,15 +4,24 @@ Provides entailment probability between premise and hypothesis.
 """
 import logging
 from typing import Optional
-import torch
-from transformers import pipeline
 
 logger = logging.getLogger(__name__)
+
+try:
+    import torch
+    from transformers import pipeline
+    _NLI_AVAILABLE = True
+except ImportError:
+    _NLI_AVAILABLE = False
+    logger.warning("torch/transformers not available - NLIDetector will be disabled")
+
 
 class NLIDetector:
     """
     Uses an NLI model to detect contradictions/hallucinations.
     Returns entailment probability (0 to 1) for a given premise‑hypothesis pair.
+    
+    If torch/transformers are not available, this class will be non-functional.
     """
 
     def __init__(self, model_name: str = "microsoft/deberta-base-mnli"):
@@ -21,12 +30,18 @@ class NLIDetector:
             model_name: Hugging Face model identifier for NLI.
                        Default is a public model that does not require authentication.
         """
+        if not _NLI_AVAILABLE:
+            logger.warning("torch/transformers not available - NLIDetector will be non-functional")
+            self.pipeline = None
+            return
+            
         try:
             # Use top_k=None to get all scores (equivalent to deprecated return_all_scores)
+            device = 0 if torch.cuda.is_available() else -1
             self.pipeline = pipeline(
                 "text-classification",
                 model=model_name,
-                device=0 if torch.cuda.is_available() else -1,
+                device=device,
                 top_k=None
             )
             logger.info(f"NLI model {model_name} loaded with top_k=None.")

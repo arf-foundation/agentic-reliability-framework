@@ -2,7 +2,7 @@ import asyncio
 import numpy as np
 import pytest
 from agentic_reliability_framework.runtime.engine import EnhancedReliabilityEngine
-from agentic_reliability_framework.core.governance.intents import EventSeverity
+from agentic_reliability_framework.core.models.event import EventSeverity
 
 
 class DummyOrchestrator:
