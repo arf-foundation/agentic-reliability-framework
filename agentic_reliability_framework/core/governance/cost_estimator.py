@@ -13,11 +13,14 @@ deterministic, but the architecture allows for future probabilistic extensions.
 """
 
 import os
+import logging
 from functools import lru_cache
 from typing import Dict, Optional, Union, Any
 import yaml
 
 from agentic_reliability_framework.core.governance.intents import ProvisionResourceIntent, ResourceType
+
+logger = logging.getLogger(__name__)
 
 # -----------------------------------------------------------------------------
 # Core Estimator
@@ -88,20 +91,34 @@ class CostEstimator:
         else:
             self._pricing = self.DEFAULT_PRICING.copy()
 
-    # Removed @lru_cache to avoid hashing issues with Pydantic models
+    @lru_cache(maxsize=256)
+    def _cached_estimate(self, resource_type: ResourceType, size: str) -> Optional[float]:
+        """
+        Internal helper using primitive args so that lru_cache does not try to
+        hash a Pydantic model (which may contain unhashable dicts).
+        """
+        prices = self._pricing.get(resource_type)
+        if prices is None:
+            return None
+        return prices.get(size)
+
     def estimate_monthly_cost(self, intent: ProvisionResourceIntent) -> Optional[float]:
         """
-        Deterministic cost estimate.
+        Deterministic cost estimate based on an intent.
 
         Returns:
             Monthly cost in USD, or None if the size is not found.
         """
-        resource_pricing = self._pricing.get(intent.resource_type)
-        if not resource_pricing:
-            return None
+        # Strip whitespace to avoid hidden issues
+        size = intent.size.strip() if intent.size else intent.size
+        cost = self._cached_estimate(intent.resource_type, size)
 
-        # Exact match on size string
-        return resource_pricing.get(intent.size)
+        logger.debug(
+            "estimate_monthly_cost: resource_type=%s, size='%s', cost=%s, available_sizes=%s",
+            intent.resource_type, size, cost,
+            list(self._pricing.get(intent.resource_type, {}).keys())
+        )
+        return cost
 
     def cost_delta_vs_baseline(
         self,
