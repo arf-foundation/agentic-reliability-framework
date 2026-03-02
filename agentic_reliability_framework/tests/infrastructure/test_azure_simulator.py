@@ -76,3 +76,19 @@ def test_simulator_escalate_medium_risk():
     # Risk score for WRITE permission is 0.1667 (below 0.4) -> APPROVE
     assert result.recommended_action == RecommendedAction.APPROVE
     assert 0.1 < result.risk_score < 0.3
+
+
+def test_cost_projection_present_in_healing_intent():
+    """Ensure cost_projection appears both top-level and in parameters."""
+    policies = allow_all()
+    simulator = AzureInfrastructureSimulator(policies)
+    intent = ProvisionResourceIntent(
+        resource_type=ResourceType.VM,
+        region="eastus",
+        size="Standard_D2s_v3",
+        requester="alice",
+        environment="dev"
+    )
+    result = simulator.evaluate(intent)
+    assert result.cost_projection == 70.0
+    assert result.parameters.get("cost_projection") == 70.0
