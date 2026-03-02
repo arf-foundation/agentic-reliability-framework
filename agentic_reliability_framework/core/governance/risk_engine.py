@@ -29,14 +29,23 @@ import pymc as pm
 import arviz as az
 from sklearn.preprocessing import StandardScaler
 
-# Optional Pyro import for hyperpriors
+# Pyro and torch are optional; import them conditionally
 try:
     import pyro
     import pyro.distributions as dist
     from pyro.infer import SVI, Trace_ELBO, Predictive
+    import torch
     PYRO_AVAILABLE = True
 except ImportError:
     PYRO_AVAILABLE = False
+    # Create dummy modules to avoid NameError if someone tries to use them
+    pyro = None
+    dist = None
+    SVI = None
+    Trace_ELBO = None
+    Predictive = None
+    torch = None
+    logger = logging.getLogger(__name__)
     logger.warning("Pyro not installed; hyperprior functionality will be disabled.")
 
 from agentic_reliability_framework.core.governance.intents import (
@@ -111,12 +120,14 @@ class HyperpriorBetaStore:
         self._history: List[Tuple[int, float]] = []  # (category_idx, success)
         self._initialized = False
         self._lock = threading.RLock()
-        self._init_model()
+        if PYRO_AVAILABLE:
+            self._init_model()
+        else:
+            logger.warning("HyperpriorBetaStore: Pyro not available; store will be a no-op.")
 
     def _init_model(self):
         """Initialize Pyro parameters if available."""
         if not PYRO_AVAILABLE:
-            logger.warning("Pyro not available; hyperprior model will use conjugate fallback.")
             return
 
         # Hyperpriors (Gamma for alpha, beta)
@@ -129,7 +140,7 @@ class HyperpriorBetaStore:
 
     def model(self, observations=None):
         """Pyro model for hyperprior Beta."""
-        if not PYRO_AVAILABLE:
+        if not PYRO_AVAILABLE or not self._initialized:
             return
 
         # Global hyperprior (concentration parameters)
@@ -148,7 +159,7 @@ class HyperpriorBetaStore:
 
     def guide(self, observations=None):
         """Variational guide for hyperprior model."""
-        if not PYRO_AVAILABLE:
+        if not PYRO_AVAILABLE or not self._initialized:
             return
 
         # Variational parameters for hyperpriors
@@ -164,7 +175,7 @@ class HyperpriorBetaStore:
 
     def update(self, category: ActionCategory, success: bool):
         """Record an observation and optionally run SVI."""
-        if not PYRO_AVAILABLE:
+        if not PYRO_AVAILABLE or not self._initialized:
             return
 
         cat_idx = self.category_indices[category]
@@ -176,7 +187,7 @@ class HyperpriorBetaStore:
 
     def _run_svi(self, steps=50):
         """Run variational inference on observed data."""
-        if not PYRO_AVAILABLE or len(self._history) == 0:
+        if not PYRO_AVAILABLE or not self._initialized or len(self._history) == 0:
             return
 
         optimizer = pyro.optim.Adam({"lr": 0.01})
@@ -188,7 +199,7 @@ class HyperpriorBetaStore:
 
     def get_risk_summary(self, category: ActionCategory) -> Dict[str, float]:
         """Return posterior predictive risk metrics for a category."""
-        if not PYRO_AVAILABLE or len(self._history) == 0:
+        if not PYRO_AVAILABLE or not self._initialized or len(self._history) == 0:
             # Fall back to uniform prior
             return {"mean": 0.5, "p5": 0.1, "p50": 0.5, "p95": 0.9}
 
