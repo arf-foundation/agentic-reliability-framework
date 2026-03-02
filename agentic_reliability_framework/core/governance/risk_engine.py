@@ -317,13 +317,10 @@ class HMCModel:
         elif isinstance(intent, GrantAccessIntent):
             return ActionCategory.SECURITY
         elif isinstance(intent, DeployConfigurationIntent):
-<<<<<<< HEAD
             # configuration deployments are generic; classify as DEFAULT by default
-=======
             if "database" in intent.service_name.lower():
                 return ActionCategory.DATABASE
             # For any other configuration change, use the baseline (DEFAULT) category
->>>>>>> adf837024fd6d06c8d3dd61a120b662cc49a2c77
             return ActionCategory.DEFAULT
         return ActionCategory.DEFAULT
 
@@ -342,13 +339,10 @@ def categorize_intent(intent: InfrastructureIntent) -> ActionCategory:
     elif isinstance(intent, GrantAccessIntent):
         return ActionCategory.SECURITY
     elif isinstance(intent, DeployConfigurationIntent):
-<<<<<<< HEAD
         # configuration deployments should count as DEFAULT category
-=======
         if "database" in intent.service_name.lower():
             return ActionCategory.DATABASE
         # For any other configuration change, use the baseline (DEFAULT) category
->>>>>>> adf837024fd6d06c8d3dd61a120b662cc49a2c77
         return ActionCategory.DEFAULT
     return ActionCategory.DEFAULT
 
@@ -502,16 +496,13 @@ class RiskEngine:
     def _context_multiplier(self, intent: InfrastructureIntent) -> float:
         """Compute multiplier based on environment, user role, time, etc."""
         mult = 1.0
-<<<<<<< HEAD
         # environment is a literal string ("prod"/"dev" etc.)
         if hasattr(intent, "environment") and intent.environment == "prod":
             mult *= 1.5
         # some intents (e.g. DeployConfigurationIntent) use `deployment_target`
-=======
         # Check for production environment in various intent fields
         if hasattr(intent, "environment") and intent.environment == "prod":
             mult *= 1.5
->>>>>>> adf837024fd6d06c8d3dd61a120b662cc49a2c77
         elif hasattr(intent, "deployment_target") and intent.deployment_target == "prod":
             mult *= 1.5
         # Additional factors could be added
