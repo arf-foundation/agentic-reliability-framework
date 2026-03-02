@@ -17,74 +17,24 @@ import importlib
 # ==================== VERSION HELPERS ====================
 
 def _get_oss_version() -> str:
-
-# ==================== PERFORMANCE CONSTANTS ====================
-HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
     """
-
-# ==================== PERFORMANCE CONSTANTS ====================
-HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
     Get OSS version from package metadata
-
-# ==================== PERFORMANCE CONSTANTS ====================
-HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
     
-
-# ==================== PERFORMANCE CONSTANTS ====================
-HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
     Returns:
-
-# ==================== PERFORMANCE CONSTANTS ====================
-HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
         Version string like "4.0.0-oss"
-
-# ==================== PERFORMANCE CONSTANTS ====================
-HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
     """
-
-# ==================== PERFORMANCE CONSTANTS ====================
-HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
     try:
-
-# ==================== PERFORMANCE CONSTANTS ====================
-HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
         # Try to import from the main package
-
-# ==================== PERFORMANCE CONSTANTS ====================
-HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
         import agentic_reliability_framework
-
-# ==================== PERFORMANCE CONSTANTS ====================
-HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
         version = getattr(agentic_reliability_framework, "__version__", "4.0.0-oss")
-
-# ==================== PERFORMANCE CONSTANTS ====================
-HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
         # Ensure it has OSS suffix
-
-# ==================== PERFORMANCE CONSTANTS ====================
-HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
         if not version.endswith("-oss"):
-
-# ==================== PERFORMANCE CONSTANTS ====================
-HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
             version = f"{version}-oss"
-
-# ==================== PERFORMANCE CONSTANTS ====================
-HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
         return version
-
-# ==================== PERFORMANCE CONSTANTS ====================
-HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
     except ImportError:
-
-# ==================== PERFORMANCE CONSTANTS ====================
-HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
         # Fallback for when package isn't installed yet
-
-# ==================== PERFORMANCE CONSTANTS ====================
-HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
         return "4.0.0-oss"
+
 
 # ==================== PERFORMANCE CONSTANTS ====================
 HISTORY_WINDOW: Final[int] = 50  # Number of historical data points to keep for trending
